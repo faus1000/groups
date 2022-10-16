@@ -6,7 +6,7 @@
         <meta
         name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- <script src="main.js"></script> -->
-        <title>Groups By Groups</title>
+        <title>Groups by Groups</title>
         <link rel="icon" type="image/x-icon" href="./images/favicon.png">
         <style>
         /* width */
@@ -50,24 +50,26 @@
         .egroup {
             width: auto;
             height: 18px;
-            margin: 2px 0;
+
             /* background-color: green; */
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #8cff5c;
+            color: #01b60a;
             padding: 0;
             font-size: 20px;
             font-family: sans-serif;
             font-weight: bold;
+            margin: 2px 0;
         }
         .etext {
-            color:#8cff5c;
+            color:#01b60a;
             padding: 0;
             font-size: 20px;
             font-family: sans-serif;
             font-weight: bold;
         }
+
         .ogroup {
             width: auto;
             height: 18px;
@@ -76,40 +78,39 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #269bff;
+            color: #df4545;
             padding: 0;
-            font-size: 20px;
+            font-size: 14px;
             font-family: sans-serif;
             font-weight: bold;
         }
         .otext {
-            color: #269bff;
+            color: #df4545;
             padding: 0;
-            font-size: 20px;
+            font-size: 14px;
             font-family: sans-serif;
             font-weight: bold;
         }
-        
     </style>
 
 </head>
 
 <body>
     <!-- <div class="mainContainer">
-                                                                        <div class="linea"></div>
-                                                                       
-                                                                    </div> -->
+                                                                            <div class="linea"></div>
+                                                                           
+                                                                        </div> -->
     <div id="container"></div>
 
     <!-- structura interna -->
     <!-- 
-                                            <div class="egroup">
-                                                <span class="etext">2e</span>
-                                            </div>
-                                            <div class="ogroup">
-                                                <span class="otext">3o</span>
-                                            </div>
-                                          -->
+                                                <div class="egroup">
+                                                    <span class="etext">2e</span>
+                                                </div>
+                                                <div class="ogroup">
+                                                    <span class="otext">3o</span>
+                                                </div>
+                                              -->
 
     <script>
 
@@ -139,98 +140,97 @@
         var addOGroup = false;
         var addEGroup = false;
 
+        var gcounter = 0;
+ 
+
         ws.onmessage = function (msg) {
             var data = JSON.parse(msg.data);
-
             var digit = Number(data.tick.quote).toFixed(decimals).slice(-1);
 
-
             if (digit % 2 === 0) {
-                var text = "O";
-                if (oCounter > 0) { // AñadirGruposE(digit, 1);
+                if (oCounter > 0) {
                     glist.push(1);
-
                     addEGroup = true
-
                 }
                 oCounter = 0;
                 eCounter += 1;
 
             } else {
-                var text = "E";
-                if (eCounter > 0) { // AñadirGruposO(digit, 1);
+                if (eCounter > 0) {
                     glist.push(1);
                     addOGroup = true;
-
                 }
                 eCounter = 0;
                 oCounter += 1;
             }
             if (eCounter > 0) {
-                // var text = "E";
-                // arr2[0] = eCounter + text;
+
                 if (addEGroup) {
                     addEGroup = false;
-                } else { // AñadirDigitsE(digit, eCounter);
+                } else {
                     glist[glist.length - 1] = eCounter;
-
-
                 }
-
-                // console.log("Ecounter mayor a cero");
             }
             if (oCounter > 0) {
-                // var text = "O";
-                // arr2[0] = oCounter + text;
+
                 if (addOGroup) {
                     addOGroup = false;
-                } else { // AñadirDigitsO(digit, oCounter);
+                } else {
                     glist[glist.length - 1] = oCounter;
-
-
-                    // console.log("Ocounter mayor a cero");
                 }
-                // mostrar en lista este array
-                // listC = arr1 + "," + arr2;
-                // console.log("Groups: " + listC);
-                // var digitListView = document.getElementById("digitGroups");
+
             }
             var d3 = glist[glist.length - 3];
             var d2 = glist[glist.length - 2];
             var d1 = glist[glist.length - 1];
-            console.log(glist);
-// falta hacerlo realtime
-//var state = false;
-            if (d3 == 1 && d2 > 1 && d1 == 1) { 
-                // guardamos d2,1
-                selectList.push(glist[glist.length - 2]);
-                selectList.push(1);
-                addgroup(glist[glist.length - 2]);
-                addgroup(1);
+           // console.log(glist);
+ 
 
-            } else if (d3 > 1 && d2 > 1 && d1 == 1) {
-                 // en select eliminamos el ultimo actualizamos el ultimo de selec y añadimos 1
-                selectList[selectList.length - 1] = d2;
-                selectList.push(1);
-                updateGroup(d2);
-                addgroup(1);
-            } 
+// CONTROLA LA LONGITUD DE LOS ARRAYS EN ESTE Y EN LOS DEMAS O REFRESH A X TIEMPO
+            if (d2 == 1 && d1 == 1) { 
+               
+                gcounter = 0;
+            } else if (d2 == 1 && d1 == 2) {
+                
+                gcounter = 1;
+             
+                addgroup(0);
+                addgroup(gcounter);
+            } else if (d2 >= 2 && d1 == 2) {
+              
+                gcounter++;
+                updateGroup(gcounter);
+              
+
+            }
+
+
+            // /////////
 
 
             function addgroup(value) {
                 var edigitText = document.createTextNode(value);
-                var Group = document.createElement("div");
-                var Etext = document.createElement("span");
-                if (value > 1) {
+                var container = document.getElementById("container");
+
+                if (value >= 1) {
+                    var Group = document.createElement("div");
+                    var Etext = document.createElement("span");
                     Group.setAttribute('class', 'egroup');
                     Etext.setAttribute("class", "etext");
-                } else {
+                    Etext.appendChild(edigitText);
+                    Group.appendChild(Etext);
+                    container.appendChild(Group);
+                } else if (value < 1) {
+
+                    var Group = document.createElement("div");
+                    var otext = document.createElement("span");
                     Group.setAttribute('class', 'egroup');
-                    Etext.setAttribute("class", "otext");
-                } Etext.appendChild(edigitText);
-                Group.appendChild(Etext);
-                var container = document.getElementById("container");
-                container.appendChild(Group);
+                    otext.setAttribute("class", "otext");
+                    otext.appendChild(document.createTextNode("Us"));
+                    Group.appendChild(otext);
+                    container.appendChild(Group);
+                }
+
 
             }
             function updateGroup(value) {
@@ -239,11 +239,15 @@
 
             }
 
+            function del() {
+                var counterItem = document.getElementsByClassName("egroup");
+                counterItem[counterItem.length - 1].remove();
+            }
 
-            console.log("select List:" + selectList);
 
- 
+            // console.log("select List:" + selectList);
+
 
         }
     </script>
-</body></html> 
+</body></html>
